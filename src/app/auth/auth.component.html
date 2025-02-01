@@ -1,11 +1,27 @@
-<div class="flex w-screen h-screen font-display bg-slate-300">
-  <div class="flex flex-row">
-    <div class="-translate-y-1/2 top-1/2 absolute flex-col flex gap-1 ml-[10vw] w-[20vw]">
-        <input type="email" name="" id="" class="rounded-lg shadow-inner">
-        <input type="password" name="" id="">
+<div class="flex w-screen h-screen font-display bg-teal-300">
+    <div class="flex flex-row">
+        <div class="p-2">
+
+            <div class="font-roboto font-semibold 2xl:text-[3vh]">
+                Страница логина
+            </div>
+            <div class="-translate-y-1/2 top-1/2 absolute flex-col flex gap-1 2xl:ml-[10vw] 2xl:w-[20vw] ">
+                <div>Имя пользователя:</div>
+                <input type="email" name="" id="" class="rounded-xl shadow-inner 2xl:h-[4vh] p-2 2xl:text-[2vh] active:outline-none focus:outline-none"
+                    placeholder="Username...">
+                <div class="2xl:mt-[2vh]">Пароль:</div>
+                <input type="password" name="" id="" class="rounded-xl shadow-inner 2xl:h-[4vh] p-2 active:outline-none focus:outline-none "
+                    placeholder="Password...">
+                <div class="p-1 bg-green-400 text-center 2xl:w-[7vw] rounded-xl 2xl:text-[2vh] 2xl:ml-[13vh] 2xl:mt-[3vh] font-medium cursor-pointer 2xl:hover:bg-green-500">
+                    <div >
+                        Войти
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        <div class="2xl:w-[50vw] 2xl:max-h-[100vh] absolute right-0">
+            <img src="../assets/img/robot_bg.jpg" alt="qqqq">
+        </div>
     </div>
-    <div class="w-[50vw] max-h-[100vh] absolute right-0">
-        <img src="../assets/img/robot_bg.jpg" alt="qqqq">
-    </div>
-  </div>
 </div>
