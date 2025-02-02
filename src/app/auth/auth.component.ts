@@ -33,12 +33,12 @@ export class AuthComponent {
   get username() { return this.registerForm.get('username'); }
   get regEmail() { return this.registerForm.get('email'); }
   get regPassword() { return this.registerForm.get('password'); }
-
+  
   async onSubmit() {
     this.submitted = true;
     if (this.isRegisterPage) {
       console.log('rrrrrr')
-
+      
       if (this.registerForm.valid) {
         try {
           await this.authService.register(
@@ -48,11 +48,11 @@ export class AuthComponent {
           );
           alert('Регистрация успешна!');
         } catch (error: any) {
-          alert('Ошибка регистрации: ' + error.message);
+          alert('Ошибка');
         }
       }
     } else {
-      console.log('lllllll')
+      console.log('llllllaaal')
       if (this.loginForm.valid) {
         try {
           await this.authService.login(
@@ -61,7 +61,7 @@ export class AuthComponent {
           );
           alert('Вход успешен!');
         } catch (error: any) {
-          alert('Ошибка входа: ' + error.message);
+          alert('Ошибка');
         }
       }
     }

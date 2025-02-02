@@ -1,0 +1,41 @@
+/* Стили для всего аккордеона */
+.p-accordion {
+    background-color: #d1fae5; /* Светло-зеленый */
+    border-radius: 10px;
+    border: 1px solid #34d399;
+}
+
+/* Заголовки аккордеона */
+.p-accordion-header {
+    font-size: 16px;
+    font-weight: bold;
+    background-color: #10b981; /* Изумрудный */
+    color: white;
+    padding: 10px;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+/* При наведении */
+.p-accordion-header:hover {
+    background-color: #059669; /* Темнее */
+}
+
+/* Открытые панели */
+.p-accordion-content {
+    padding: 10px;
+    background-color: #f0fdfa;
+    border-top: 1px solid #34d399;
+}
+
+/* Текст в контенте */
+.p-accordion-content p {
+    font-size: 14px;
+    color: #065f46;
+}
+
+
+.custom-accordion {
+    border: 2px solid #10b981;
+    border-radius: 8px;
+}
