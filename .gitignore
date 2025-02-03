@@ -5,12 +5,12 @@
 /tmp
 /out-tsc
 /bazel-out
-
+bot_zhasa/
 # Node
 /node_modules
 npm-debug.log
 yarn-error.log
-
+src/config/
 # IDEs and editors
 .idea/
 .project
