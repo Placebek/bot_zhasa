@@ -8,7 +8,7 @@ async function bootstrap() {
   const port = process.env.PORT || 3000;
 
   await app.listen(port, host);
-  console.log(`🚀 Server is running on: http://${host}:${port}`);
+  console.log(`Server is running on: http://${host}:${port}`);
 }
 
 bootstrap();

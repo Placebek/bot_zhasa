@@ -6,6 +6,9 @@ import { User } from './user/user.model';
 import { UserModule } from './user/user.module';
 import { AuthService } from './auth/auth.service';
 import { BasicAuthStrategy } from './auth/basic.strategy';
+import { TeleConstructor } from './tele_constructor/tele.model';
+import { Token } from './tele_constructor/token.model';
+
 
 @Module({
   imports: [
@@ -21,7 +24,7 @@ import { BasicAuthStrategy } from './auth/basic.strategy';
         username: configService.get<string>('DB_USERNAME'),
         password: configService.get<string>('DB_PASSWORD'),
         database: configService.get<string>('DB_NAME'),
-        models: [User],
+        models: [User, TeleConstructor, Token],
         autoLoadModels: false,
       }),
       inject: [ConfigService],
