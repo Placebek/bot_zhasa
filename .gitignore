@@ -3,6 +3,8 @@
 /node_modules
 /build
 
+.env
+
 # Logs
 logs
 *.log
@@ -14,6 +16,8 @@ lerna-debug.log*
 
 # OS
 .DS_Store
+
+steps.txt
 
 # Tests
 /coverage
