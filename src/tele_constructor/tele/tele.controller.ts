@@ -20,7 +20,6 @@ export class TeleController {
     async createTypeUsers(@Body() typeUsers: CreationAttributes<TypeUser>[]) {
         console.log('Received body:', typeUsers);
 
-        // Проверяем, что все объекты имеют правильную структуру
         for (const user of typeUsers) {
             if (!user.token_id || !user.type_id) {
                 throw new Error('Both token_id and type_id are required');
@@ -28,11 +27,9 @@ export class TeleController {
         }
 
         try {
-            // Создаем записи в базе данных
             const createdTypeUsers = await TypeUser.bulkCreate(typeUsers, { validate: true });
             console.log('Created users:', createdTypeUsers);
 
-            // Параллельно добавляем данные в файл для каждого созданного пользователя
             await Promise.all(createdTypeUsers.map(typeUser =>
                 this.botConstructor.addTypeUserCodeToFile(typeUser.id)
             ));
@@ -40,7 +37,7 @@ export class TeleController {
             return createdTypeUsers;
         } catch (error) {
             console.error('Error while creating type users:', error);
-            throw error;  // Ретранслируем ошибку, чтобы она была видна в ответе
+            throw error;
         }
     }
 }

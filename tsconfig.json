@@ -17,7 +17,6 @@
     "strictBindCallApply": false,
     "noFallthroughCasesInSwitch": false,
     "outDir": "./dist",
-    "rootDir": "./src"
   },
   "include": [
     "src/**/*",         
