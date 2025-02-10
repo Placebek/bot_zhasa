@@ -1,0 +1,1 @@
+//# sourceMappingURL=g4f.module.js.map
