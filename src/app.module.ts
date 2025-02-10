@@ -6,9 +6,12 @@ import { User } from './user/user.model';
 import { UserModule } from './user/user.module';
 import { AuthService } from './auth/auth.service';
 import { BasicAuthStrategy } from './auth/basic.strategy';
-import { TeleConstructor } from './tele_constructor/tele.model';
-import { Token } from './tele_constructor/token.model';
-
+import { TeleConstructor } from './tele_constructor/tele/tele.model';
+import { Token } from './tele_constructor/token/token.model'; 
+import { TeleModule } from './tele_constructor/tele/tele.module';
+import { TokenModule } from './tele_constructor/token/token.module';
+import { TypeUser } from './tele_constructor/tele/type-user.model';
+import { BotModule } from './tele_constructor/bot/bot-config.module';
 
 @Module({
   imports: [
@@ -24,13 +27,17 @@ import { Token } from './tele_constructor/token.model';
         username: configService.get<string>('DB_USERNAME'),
         password: configService.get<string>('DB_PASSWORD'),
         database: configService.get<string>('DB_NAME'),
-        models: [User, TeleConstructor, Token],
+        models: [User, TeleConstructor, Token, TypeUser],
         autoLoadModels: false,
+        logging: false,
       }),
       inject: [ConfigService],
     }),
     PassportModule,
     UserModule,
+    TeleModule,
+    TokenModule,
+    BotModule,
   ],
   providers: [AuthService, BasicAuthStrategy],
   exports: [AuthService],
