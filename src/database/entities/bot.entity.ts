@@ -13,4 +13,7 @@ export class Bot extends AbstractEntity<Bot> {
   
   @Column()
   hash_token: string
+
+  @Column({ name: 'is_active', default: false})
+  isActive: boolean
 }

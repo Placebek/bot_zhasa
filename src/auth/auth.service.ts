@@ -6,12 +6,16 @@ import { User } from 'src/database/entities/user.entity';
 import { EntityManager, Repository } from 'typeorm';
 import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
+import { Bot } from 'src/database/entities/bot.entity';
+import { access } from 'fs';
 
 @Injectable()
 export class AuthService {
   constructor (
     @InjectRepository(User)
-    private readonly userRepository: Repository<User>, 
+    private readonly userRepository: Repository<User>,
+    @InjectRepository(Bot)
+    private readonly botRepository: Repository<Bot>,
     private readonly jwtService: JwtService,
     private readonly entityManager: EntityManager,
   ) {}
@@ -34,7 +38,10 @@ export class AuthService {
       password: await hashedPassword
     });
     await this.entityManager.save(user);
-    return this.generateUserToken(user.id);
+    return { 
+      accessToken: await this.generateUserToken(user.id),
+      bots: 0
+    };
   }
 
   async user_login(baseUserDto: BaseUserDto) {
@@ -53,14 +60,20 @@ export class AuthService {
       throw new UnauthorizedException('Wrong credentials')
     }
 
-    return this.generateUserToken(user.id);
+    const bots = await this.botRepository.find({
+      where: { user },
+      relations: {user: true}
+    })
+
+    return {
+      accessToken: await this.generateUserToken(user.id),
+      bots: bots
+    };
   }
 
 
   async generateUserToken (userID) {
-    const accessToken = this.jwtService.sign({ userID }, {expiresIn: '1h'});
-    return { 
-      accessToken, 
-    };
+    const accessToken = this.jwtService.signAsync({ userID }, {expiresIn: '1h'});
+    return await accessToken;
   }
 }
