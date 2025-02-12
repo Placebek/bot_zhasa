@@ -1,5 +1,6 @@
 import { AbstractEntity } from "src/database/abstract.entity";
-import { Column, Entity } from "typeorm";
+import { Column, Entity, OneToMany } from "typeorm";
+import { Bot } from "./bot.entity";
 
 @Entity({name: 'users'})
 export class User extends AbstractEntity<User> {
@@ -11,4 +12,7 @@ export class User extends AbstractEntity<User> {
   
   @Column()
   email: string
+
+  @OneToMany(() => Bot, (bot) => bot.user)
+  bots: Bot[];
 }

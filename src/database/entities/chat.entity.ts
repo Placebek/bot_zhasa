@@ -5,8 +5,8 @@ import { Type } from "./type.entity";
 
 @Entity({name: 'chats'})
 export class Chat extends AbstractEntity<Chat> {
-  @ManyToOne(() => Bot, {cascade: true})
-  @JoinColumn({name: 'bot_id'})
+  @ManyToOne(() => Bot, (bot) => bot.chats, { cascade: true })
+  @JoinColumn({ name: 'bot_id' })
   bot: Bot;
   
   @Column({type: 'text'})
@@ -16,7 +16,7 @@ export class Chat extends AbstractEntity<Chat> {
   @JoinColumn({name: 'parent_id'})
   parentID: number
 
-  @ManyToOne(() => Type, {cascade: true})
+  @ManyToOne(() => Type, (type) => type.chats, {cascade: true})
   @JoinColumn({name: 'type_id'})
   type: Type;
 }

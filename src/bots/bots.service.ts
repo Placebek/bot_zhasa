@@ -13,42 +13,73 @@ export class BotsService {
   constructor (
     @InjectRepository(Bot)
     private readonly botRepository: Repository<Bot>,
-    private jwtService: JwtService,
+    @InjectRepository(User)
+    private readonly userRepository: Repository<User>,
     private readonly entityManager: EntityManager,
   ) {}
 
   async createUserBot( userID, createBotDto: CreateBotDto) {
-    const user = this.botRepository.findOne({
-      where: {id: userID}
+    const user = await this.getUserByID(userID);
+    const bot = new Bot({
+      ...createBotDto,
+      user: user,
     });
-
-    // const bot = new Bot({
-    //   ...createBotDto,
-    //   user
-    // });
-    // await this.entityManager.save(bot);
-    // return 'bot create!';
+    await this.entityManager.save(bot);
+    return 'bot create!';
   }
 
   async getAllBots() {
     return this.botRepository.find();
   }
 
-  async findOne(id: number) {
+  async findBotByID(id: number) {
     return this.botRepository.findOne({
       where: {id},
-      relations: {
-        user: true
-      }
     });
   }
 
-  update(id: number, updateBotDto: UpdateBotDto) {
-    return `This action updates a #${id} bot`;
+  async updateBotActive(userID, id: number) {
+    const bot = await this.isUserBot(userID, id);
+    if (bot) {
+      bot.isActive = !(bot.isActive);
+      await this.entityManager.save(bot);
+      return `This action updates a #${id} bot`;
+    }
+    return `This action not updates a #${id} bot`;
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} bot`;
+  async removeBotByID(userID, id: number) {
+    const bot = await this.isUserBot(userID, id);
+
+    if (bot) {
+      await this.botRepository.delete(id)
+      return `This action removes a #${id} bot`;
+    }
+    return `Not delete`;
   }
 
+  async isUserBot (userID, botID) {
+    const user = await this.getUserByID(userID);
+    const bot = await this.botRepository.findOne({
+      where: {id: botID},
+      relations: {user: true}
+    });
+
+    if (bot) {
+      if (bot.user.id === user.id) {
+        return bot;
+      }
+    }
+  }
+
+  async getUserByID(userID) {
+    const user = await this.userRepository.findOne({
+      where: {id: userID},
+    });
+
+    if (!user) {
+      throw new Error('User not found');
+    }
+    return user;
+  }
 }

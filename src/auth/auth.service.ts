@@ -62,7 +62,6 @@ export class AuthService {
 
     const bots = await this.botRepository.find({
       where: { user },
-      relations: {user: true}
     })
 
     return {

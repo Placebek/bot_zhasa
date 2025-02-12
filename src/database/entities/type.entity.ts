@@ -1,8 +1,12 @@
 import { AbstractEntity } from "src/database/abstract.entity";
-import { Column, Entity } from "typeorm";
+import { Column, Entity, OneToMany } from "typeorm";
+import { Chat } from "./chat.entity";
 
 @Entity({name: 'types'})
 export class Type extends AbstractEntity<Type> {
   @Column()
-  name: string
+  name: string;
+
+  @OneToMany(() => Chat, (chat) => chat.type)
+  chats: Chat[];
 }

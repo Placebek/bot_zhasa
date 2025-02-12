@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Req } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Req, Put } from '@nestjs/common';
 import { BotsService } from './bots.service';
 import { CreateBotDto } from './dto/create-bot.dto';
 import { AuthenticationGuard } from 'src/guards/authentication.guard';
@@ -11,28 +11,27 @@ export class BotsController {
   ) {}
 
   @Post('create')
-  // @Req() request: Request, 
-  createUserBot(@Req() request, @Body() createBotDto: CreateBotDto) {
+  async createUserBot(@Req() request, @Body() createBotDto: CreateBotDto) {
     return this.botsService.createUserBot(request.userID ,createBotDto);
   }
 
   @Get()
-  getAllBots() {
+  async getAllBots() {
     return this.botsService.getAllBots();
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.botsService.findOne(+id);
+  async findBotByID(@Param('id') id: string) {
+    return this.botsService.findBotByID(+id);
   }
 
-  // @Patch(':id')
-  // update(@Param('id') id: string, @Body() updateBotDto: UpdateBotDto) {
-  //   return this.botsService.update(+id, updateBotDto);
-  // }
+  @Put('active/:id')
+  async updateBotActive(@Req() request, @Param('id') id: string) {
+    return this.botsService.updateBotActive(request.userID, +id);
+  }
 
-  // @Delete(':id')
-  // remove(@Param('id') id: string) {
-  //   return this.botsService.remove(+id);
-  // }
+  @Delete(':botID')
+  async removeBotByID(@Req() request, @Param('botID') botID: string) {
+    return this.botsService.removeBotByID(request.userID, +botID);
+  }
 }
