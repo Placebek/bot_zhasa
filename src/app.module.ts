@@ -4,9 +4,10 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
 import { BotsModule } from './bots/bots.module';
-import { ChatsModule } from './chats/chats.module';
 import { TypesModule } from './types/types.module';
 import { JwtModule } from '@nestjs/jwt';
+import { TeleConstructorsModule } from './tele-constructors/tele-constructors.module';
+import { CommandsModule } from './commands/commands.module';
 import config from './config/config';
 
 @Module({
@@ -30,7 +31,7 @@ import config from './config/config';
     ConfigModule.forRoot({
       isGlobal: true
     }), 
-    DatabaseModule, AuthModule, BotsModule, UsersModule, ChatsModule, TypesModule
+    DatabaseModule, AuthModule, BotsModule, UsersModule, TypesModule, TeleConstructorsModule, CommandsModule
   ],
   controllers: [],
   providers: [],

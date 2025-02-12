@@ -1,11 +1,11 @@
 import { AbstractEntity } from "src/database/abstract.entity";
 import { User } from "src/database/entities/user.entity";
 import { Column, Entity, JoinColumn, ManyToOne, OneToMany } from "typeorm";
-import { Chat } from "./chat.entity";
+import { Command } from "./commands.entity";
 
 @Entity({name: 'bots'})
 export class Bot extends AbstractEntity<Bot> {
-  @ManyToOne(() => User, (user) => user.bots, { cascade: true })
+  @ManyToOne(() => User, (user) => user.bots)
   @JoinColumn({ name: 'user_id' })
   user: User;
 
@@ -13,11 +13,12 @@ export class Bot extends AbstractEntity<Bot> {
   name: string 
   
   @Column()
-  hash_token: string
+  token: string
 
   @Column({ name: 'is_active', default: false})
   isActive: boolean
 
-  @OneToMany(() => Chat, (chat) => chat.bot)
-  chats: Chat[];
+  @OneToMany(() => Command, (command) => command.bot, {cascade: true})
+  @JoinColumn({name: 'command_id'})
+  commands: Command[];
 }
