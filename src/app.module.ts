@@ -1,14 +1,16 @@
 import { Module } from '@nestjs/common';
 import { DatabaseModule } from './database/database.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { UsersModule } from './users/users.module';
-import { AuthModule } from './auth/auth.module';
-import { BotsModule } from './bots/bots.module';
-import { TypesModule } from './types/types.module';
+import { UsersModule } from './modules/users/users.module';
+import { AuthModule } from './modules/auth/auth.module';
+import { BotsModule } from './modules/bots/bots.module';
+import { TypesModule } from './modules/types/types.module';
 import { JwtModule } from '@nestjs/jwt';
-import { TeleConstructorsModule } from './tele-constructors/tele-constructors.module';
-import { CommandsModule } from './commands/commands.module';
+import { TeleConstructorsModule } from './modules/tele-constructors/tele-constructors.module';
+import { CommandsModule } from './modules/commands/commands.module';
 import config from './config/config';
+import { ApiConfigModule } from './config/config.module';
+import { CommonModule } from './common/common.module';
 
 @Module({
   imports: [
@@ -19,7 +21,7 @@ import config from './config/config';
     }),
     JwtModule.registerAsync({
       imports: [ConfigModule],
-      useFactory: async (config) => ({
+      useFactory: async (config: ConfigService) => ({
         secret: config.get('jwt.secret'),
         // signOptions: {
         //   expiresIn: '3h'
@@ -28,10 +30,15 @@ import config from './config/config';
       global: true,
       inject: [ConfigService],
     }),
-    ConfigModule.forRoot({
-      isGlobal: true
-    }), 
-    DatabaseModule, AuthModule, BotsModule, UsersModule, TypesModule, TeleConstructorsModule, CommandsModule
+    DatabaseModule,
+    AuthModule,
+    BotsModule,
+    UsersModule,
+    TypesModule,
+    TeleConstructorsModule,
+    CommandsModule,
+    ApiConfigModule,  // Импортируешь ApiConfigModule
+    CommonModule,
   ],
   controllers: [],
   providers: [],
