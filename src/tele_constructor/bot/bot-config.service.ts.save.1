@@ -1,0 +1,137 @@
+import { Injectable } from "@nestjs/common";
+import { InjectModel } from "@nestjs/sequelize";
+import { Token } from "../token/token.model";
+import { TeleConstructor } from "../tele/tele.model";
+import { TypeUser } from "../tele/type-user.model";
+import * as fs from "fs";
+import * as path from "path";
+import { exec } from "child_process";
+
+@Injectable()
+export class BotConstuctor {
+  constructor(
+    @InjectModel(Token)
+    private tokenModel: typeof Token,
+    @InjectModel(TeleConstructor)
+    private teleConstructorModel: typeof TeleConstructor,
+    @InjectModel(TypeUser)
+    private typeUserModel: typeof TypeUser
+  ) {}
+
+  async getMainPyCode(telegram_id: string): Promise<string> {
+    const tokenEntry = await this.tokenModel.findOne({ where: { telegram_id } });
+    if (!tokenEntry) {
+      throw new Error("Token not found");
+    }
+
+    // Формируем базовый код бота на Python
+    let mainPyCode = `import asyncio\nimport aiohttp\nfrom aiogram import Bot, Router, F\from aiogram.types import Message\nfrom aiogram.utils import executor\n\n`;
+    mainPyCode += `TOKEN = "${tokenEntry.token}"\n`;
+    mainPyCode += `bot = Bot(token=TOKEN)\n`;
+    mainPyCode += `router = Router\n\n`;
+    mainPyCode += `async def delete_webhook():\n`;
+    mainPyCode += `    url = f"https://api.telegram.org/bot{TOKEN}/deleteWebhook"\n`;
+    mainPyCode += `    async with aiohttp.ClientSession() as session:\n`;
+    mainPyCode += `        async with session.post(url) as resp:\n`;
+    mainPyCode += `            print("Webhook deleted:", await resp.text())\n\n`;
+    mainPyCode += `async def main():\n`;
+    mainPyCode += `    await delete_webhook()\n`; // Автоудаление Webhook перед старто
+    mainPyCode += `    await dp.start_polling(bot)\n\n`;
+    mainPyCode += `if __name__ == "__main__":\n    asyncio.run(main())`;
+
+    const filePath = path.join(process.cwd(), "generated_files", `main_${telegram_id}.py`);
+    const dirPath = path.dirname(filePath);
+    if (!fs.existsSync(dirPath)) {
+      fs.mkdirSync(dirPath, { recursive: true });
+    }
+
+    // Сохраняем файл
+    fs.writeFileSync(filePath, mainPyCode);
+    console.log(`File created at: ${filePath}`);
+
+    // Запускаем shell-скрипт для активации env и старта через pm2
+    this.startBotWithShell(telegram_id, filePath);
+
+    return filePath;
+  }
+
+  async addTypeUserCodeToFile(typeUserId: number): Promise<void> {
+    const typeUser = await this.typeUserModel.findOne({
+      where: { id: typeUserId },
+      include: [Token],
+    });
+
+    if (!typeUser || !typeUser.token || !typeUser.token.telegram_id) {
+      throw new Error("TypeUser or Token not found");
+    }
+
+    const telegram_id = typeUser.token.telegram_id;
+    console.log(`Processing TypeUser with ID: ${typeUserId}, Telegram ID: ${telegram_id}`);
+
+    let teleConstructor;
+    if (isNaN(Number(typeUser.type_id))) {
+      console.log(`Searching for TeleConstructor by type: "${typeUser.type_id}"`);
+      teleConstructor = await this.teleConstructorModel.findOne({ where: { type: typeUser.type_id } });
+    } else {
+      console.log(`Searching for TeleConstructor by ID: "${typeUser.type_id}"`);
+      teleConstructor = await this.teleConstructorModel.findOne({ where: { id: typeUser.type_id } });
+    }
+
+    if (!teleConstructor) {
+      throw new Error(`TeleConstructor not found for type_id: "${typeUser.type_id}"`);
+    }
+
+    const filePath = path.join(process.cwd(), "generated_files", `main_${telegram_id}.py`);
+
+    if (!fs.existsSync(filePath)) {
+      console.warn(`File ${filePath} not found. Generating file...`);
+      await this.getMainPyCode(telegram_id);
+    }
+
+    let fileContent = fs.readFileSync(filePath, "utf8");
+    const codeToAdd = `\n\n# Block: ${teleConstructor.type}\n${teleConstructor.code.trim()}`;
+
+    if (fileContent.includes(codeToAdd.trim())) {
+      console.log(`Code block already exists in ${filePath}, skipping...`);
+      return;
+    }
+
+    const insertionPoint = "async def main():";
+    if (fileContent.includes(insertionPoint)) {
+      fileContent = fileContent.replace(
+        insertionPoint,
+        `${codeToAdd}\n\n${insertionPoint}`
+      );
+    } else {
+      fileContent += `\n\n${codeToAdd}`;
+    }
+
+    fs.writeFileSync(filePath, fileContent, "utf8");
+    console.log(`File successfully updated at: ${filePath}`);
+
+    // Перезапуск бота после обновления кода
+    this.restartBotWithShell(telegram_id, filePath);
+  }
+
+  private startBotWithShell(telegram_id: string, filePath: string): void {
+    // Запускаем shell-скрипт, который активирует env и запускает бота через pm2
+    exec(`bash bot.sh ${filePath}`, (err, stdout, stderr) => {
+      if (err) {
+        console.error(`Error starting bot: ${stderr}`);
+      } else {
+        console.log(`Bot ${telegram_id} started successfully`);
+      }
+    });
+  }
+
+  private restartBotWithShell(telegram_id: string, filePath: string): void {
+    // Перезапускаем бота через shell-скрипт
+    exec(`bash bot.sh ${filePath}`, (err, stdout, stderr) => {
+      if (err) {
+        console.error(`Error restarting bot: ${stderr}`);
+      } else {
+        console.log(`Bot ${telegram_id} restarted successfully`);
+      }
+    });
+  }
+}

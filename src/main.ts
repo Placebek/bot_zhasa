@@ -6,7 +6,7 @@ import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
-  const host = process.env.HOST || 'localhost';
+  const host = process.env.HOST || '0.0.0.0';
   const port = process.env.PORT || 3000;
   const config = new DocumentBuilder()
     .setTitle('My API')

@@ -1,0 +1,23 @@
+
+
+    if (!teleConstructor) {
+        throw new Error(`TeleConstructor not found for type_id: "${typeUser.type_id}"`);
+    }
+
+    const filePath = path.join(process.cwd(), 'generated_files', `main_${telegram_id}.py`);
+
+    if (!fs.existsSync(filePath)) {
+        console.warn(`File ${filePath} not found. Generating file...`);
+        await this.getMainPyCode(telegram_id);
+    }
+
+    let fileContent = fs.readFileSync(filePath, 'utf8');
+    const codeToAdd = `\n\n# Block: ${teleConstructor.type}\n${teleConstructor.code.trim()}`;
+
+    if (fileContent.includes(codeToAdd.trim())) {
+        console.log(`Code block already exists in ${filePath}, skipping...`);
+        return;
+    }
+
+    const insertionPoint = "if __name__ == '__main__':";
+
