@@ -1,0 +1,17 @@
+import { Column, Model, Table, HasMany, DataType } from "sequelize-typesrcipt";
+
+
+@Table({
+    tableName: 'commands',
+    freezeTableName: true,
+})
+export class Command extends Model<Command> {
+    @Column
+    name_command: string;
+
+    @Column({
+        type: DataType.TEXT
+    })
+    response_command: string;
+
+     

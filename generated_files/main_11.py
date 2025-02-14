@@ -42,7 +42,21 @@ async def ask_chatgpt(message: Message):
         [{"role": "user", "content": user_question}]
     )
     await message.answer(response)
+
+
+# Block: start-старт
+
+from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
+
+@dp.message(Command("link"))
+async def link_command(message: Message):
+    keyboard = InlineKeyboardMarkup(inline_keyboard=[
+        [InlineKeyboardButton(text="Click me", url="https://www.youtube.com/watch?v=O0wdCXdzWcA")]
+    ])
+    await message.answer("Диляра", reply_markup=keyboard)
+    
 #1
 if __name__ == '__main__':
+    import asyncio
     asyncio.run(main())
 #2
