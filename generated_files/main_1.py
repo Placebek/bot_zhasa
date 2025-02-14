@@ -22,13 +22,7 @@ async def main():
     await delete_webhook()
     await dp.start_polling(bot)
 
-
-
-# Block: message_handler
-@dp.message(Command("info"))
-async def information(message: Message):
-    await message.answer("Прозводитель - /bot")
 #1
-if __name__ == '__main__':
+if __name__ == "__main__":
     asyncio.run(main())
 #2

@@ -1,4 +1,4 @@
-import { Column, Model, Table, HasMany } from "sequelize-typescript";
+import { Column, Model, Table, HasMany, DataType } from "sequelize-typescript";
 import { TypeUser } from "./type-user.model"; 
 
 @Table({
@@ -9,7 +9,9 @@ export class TeleConstructor extends Model<TeleConstructor> {
     @Column
     type: string;
 
-    @Column
+    @Column({
+        type: DataType.TEXT,
+    })
     code: string;
 
     @HasMany(() => TypeUser)  
