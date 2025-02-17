@@ -1,5 +1,5 @@
 import { ExecutionContext, Injectable, Logger, UnauthorizedException, UseGuards } from '@nestjs/common';
-import { CreateBotDto } from './dto/create-bot.dto';
+import { BotDataDto, CreateBotDto } from './dto/create-bot.dto';
 import { UpdateBotDto } from './dto/update-bot.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Bot } from '../../database/entities/bot.entity';
@@ -67,28 +67,43 @@ export class BotsService {
     return this.botRepository.find();
   }
 
-  async findBotByID(id: number) {
-    return this.botRepository.findOne({
-      where: {id},
-    });
+  async getBotByID(userID: number, botDataDto: BotDataDto) {
+    await this.userBotService.isUserBot(userID, botDataDto.bot_id);
+    try {
+      const response = await firstValueFrom(
+        this.httpService.get(
+          `${this.apiURL}/bots/${botDataDto.bot_id}`,
+          {
+            headers: {
+              Authorization: this.authHeader,
+            },
+          }
+        )
+      );
+        console.log('\n\nОтвет сервера:\n', response.data);
+        return {response: response.data};
+      } catch (error) {
+        console.error('Ошибка при отправке запроса:', error);
+        throw error;
+      }
   }
 
-  async updateBotActive(userID, id: number) {
-    const bot = await this.userBotService.isUserBot(userID, id);
+  async updateBotActive(userID, botDataDto: BotDataDto) {
+    const bot = await this.userBotService.isUserBot(userID, botDataDto.bot_id);
     if (bot) {
       bot.isActive = !(bot.isActive);
       await this.entityManager.save(bot);
-      return `This action updates a #${id} bot`;
+      return `This action updates a #${botDataDto.bot_id} bot`;
     }
-    return `This action not updates a #${id} bot`;
+    return `This action not updates a #${botDataDto.bot_id} bot`;
   }
 
-  async removeBotByID(userID, id: number) {
-    const bot = await this.userBotService.isUserBot(userID, id);
+  async removeBotByID(userID, botDataDto: BotDataDto) {
+    const bot = await this.userBotService.isUserBot(userID, botDataDto.bot_id);
 
     if (bot) {
-      await this.botRepository.delete(id)
-      return `This action removes a #${id} bot`;
+      await this.botRepository.delete(botDataDto.bot_id)
+      return `This action removes a #${botDataDto.bot_id} bot`;
     }
     return `Not delete`;
   }

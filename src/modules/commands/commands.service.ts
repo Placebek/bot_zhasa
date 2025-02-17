@@ -1,14 +1,16 @@
 import { Injectable } from '@nestjs/common';
-import { BotDataDto } from './dto/create-command.dto';
+import { BotDataDto, AddCommandsToTheBotDto, AddCommandsToTheBotYourselfDto } from './dto/create-command.dto';
 import { UpdateCommandDto } from './dto/update-command.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Command } from 'src/database/entities/commands.entity';
 import { User } from 'src/database/entities/user.entity';
 import { Bot } from 'src/database/entities/bot.entity';
 import { EntityManager, Repository } from 'typeorm';
-import { HttpService } from '@nestjs/axios';
 import { ApiConfigService } from 'src/config/api-config.service';
 import { UserBotService } from 'src/common/common.service';
+import { firstValueFrom, Observable } from 'rxjs';
+import { HttpService } from '@nestjs/axios';
+
 
 @Injectable()
 export class CommandsService {
@@ -19,6 +21,7 @@ export class CommandsService {
     @InjectRepository(Command)
     private readonly commandRepository: Repository<Command>,
     private readonly entityManager: EntityManager,
+    private readonly httpService: HttpService,
     private readonly apiConfigService: ApiConfigService,  
     private readonly userBotService: UserBotService,
   ) {
@@ -26,7 +29,7 @@ export class CommandsService {
     this.apiURL = this.apiConfigService.apiURL;
   }
 
-  async getCommandsByBotID(userID, botDataDto: BotDataDto) {
+  async getCommandsByBotID(userID: number, botDataDto: BotDataDto) {
     const bot = await this.userBotService.isUserBot(userID, botDataDto.bot_id);
 
     // try {
@@ -53,20 +56,69 @@ export class CommandsService {
     return bot;
   }
 
-  findAll() {
-    return `This action returns all commands`;
+  async findAllCommands() {
+    try {
+      const response = await firstValueFrom(
+        this.httpService.get(
+          `${this.apiURL}/tele`,
+          {
+            headers: {
+              Authorization: this.authHeader,
+            },
+          }
+        )
+      );
+        console.log('\n\nОтвет сервера:\n', response.data);
+        return {response: response.data};
+      } catch (error) {
+        console.error('Ошибка при отправке запроса:', error);
+        throw error;
+      }
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} command`;
+  async addCommandsToTheBot(addCommandsToTheBotDto: AddCommandsToTheBotDto) {
+    try {
+      const response = await firstValueFrom(
+        this.httpService.post(
+          `${this.apiURL}/tele/type-user/bulk`,
+          {
+            addCommandsToTheBotDto
+          },
+          {
+            headers: {
+              Authorization: this.authHeader,
+            },
+          }
+        )
+      );
+        console.log('\n\nОтвет сервера:\n', response.data);
+        return {response: response.data};
+      } catch (error) {
+        console.error('Ошибка при отправке запроса:', error);
+        throw error;
+      }
   }
 
-  update(id: number, updateCommandDto: UpdateCommandDto) {
-    return `This action updates a #${id} command`;
+  async addCommandsToTheBotYourself(addCommandsToTheBotYourselfDto: AddCommandsToTheBotYourselfDto) {
+    try {
+      const response = await firstValueFrom(
+        this.httpService.post(
+          `${this.apiURL}/commands/add-command`,
+          {
+            addCommandsToTheBotYourselfDto
+          },
+          {
+            headers: {
+              Authorization: this.authHeader,
+            },
+          }
+        )
+      );
+        console.log('\n\nОтвет сервера:\n', response.data);
+        return {response: response.data};
+      } catch (error) {
+        console.error('Ошибка при отправке запроса:', error);
+        throw error;
+      }
   }
-
-  remove(id: number) {
-    return `This action removes a #${id} command`;
-  }
-
 }

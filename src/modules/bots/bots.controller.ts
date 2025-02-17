@@ -1,6 +1,6 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Req, Put } from '@nestjs/common';
 import { BotsService } from './bots.service';
-import { CreateBotDto } from './dto/create-bot.dto';
+import { BotDataDto, CreateBotDto } from './dto/create-bot.dto';
 import { AuthenticationGuard } from 'src/guards/authentication.guard';
 
 @UseGuards(AuthenticationGuard)
@@ -15,23 +15,23 @@ export class BotsController {
     return this.botsService.createUserBot(request.userID ,createBotDto);
   }
 
-  @Get()
+  @Get('all')
   async getAllBots() {
     return this.botsService.getAllBots();
   }
 
-  @Get(':id')
-  async findBotByID(@Param('id') id: string) {
-    return this.botsService.findBotByID(+id);
+  @Get('id')
+  async getBotByID(@Req() request, @Body() botDataDto: BotDataDto) {
+    return this.botsService.getBotByID(request.userID, botDataDto);
   }
 
-  @Put('active/:id')
-  async updateBotActive(@Req() request, @Param('id') id: string) {
-    return this.botsService.updateBotActive(request.userID, +id);
+  @Put('active/id')
+  async updateBotActive(@Req() request, @Body() botDataDto: BotDataDto) {
+    return this.botsService.updateBotActive(request.userID, botDataDto);
   }
 
-  @Delete(':botID')
-  async removeBotByID(@Req() request, @Param('botID') botID: string) {
-    return this.botsService.removeBotByID(request.userID, +botID);
+  @Delete('id')
+  async removeBotByID(@Req() request, @Body() botDataDto: BotDataDto) {
+    return this.botsService.removeBotByID(request.userID, botDataDto);
   }
 }
