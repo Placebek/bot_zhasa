@@ -9,7 +9,7 @@ import { AuthenticationGuard } from 'src/guards/authentication.guard';
 export class CommandsController {
   constructor(private readonly commandsService: CommandsService) {}
 
-  @Post('bot')
+  @Post('bot/id')
   async getCommandsByBotID(@Req() request, @Body() botDataDto: BotDataDto) {
     return this.commandsService.getCommandsByBotID(request.userID, botDataDto);
   }

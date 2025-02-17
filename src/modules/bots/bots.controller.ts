@@ -20,7 +20,7 @@ export class BotsController {
     return this.botsService.getAllBots();
   }
 
-  @Get('id')
+  @Post('id')
   async getBotByID(@Req() request, @Body() botDataDto: BotDataDto) {
     return this.botsService.getBotByID(request.userID, botDataDto);
   }

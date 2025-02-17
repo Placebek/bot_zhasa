@@ -9,13 +9,15 @@ import { CommonModule } from 'src/common/common.module';
 import { ApiConfigModule } from 'src/config/config.module';
 import { UserBotService } from 'src/common/common.service';
 import { ApiConfigService } from 'src/config/api-config.service';
+import { HttpModule } from '@nestjs/axios';
 
 @Module({
   imports: [TypeOrmModule.forFeature([
     Command, User, Bot,
   ]),
   ApiConfigModule,
-  CommonModule
+  CommonModule,
+  HttpModule
   ],
   providers: [CommandsService, ],
   controllers: [CommandsController, ],
