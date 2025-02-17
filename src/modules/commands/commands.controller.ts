@@ -1,7 +1,6 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Req } from '@nestjs/common';
+import { Controller, Get, Post, Body, UseGuards, Req } from '@nestjs/common';
 import { CommandsService } from './commands.service';
 import { BotDataDto, AddCommandsToTheBotDto, AddCommandsToTheBotYourselfDto } from './dto/create-command.dto';
-import { UpdateCommandDto } from './dto/update-command.dto';
 import { AuthenticationGuard } from 'src/guards/authentication.guard';
 
 @UseGuards(AuthenticationGuard)
@@ -19,13 +18,13 @@ export class CommandsController {
     return this.commandsService.findAllCommands();
   }
 
-  @Post('add-commands')
+  @Post('add')
   async addCommandsToTheBot(@Body() addCommandsToTheBotDto: AddCommandsToTheBotDto) {
     return this.commandsService.addCommandsToTheBot(addCommandsToTheBotDto);
   }
 
-  @Post('add-my-commands')
-  async remove(@Body() addCommandsToTheBotYourselfDto: AddCommandsToTheBotYourselfDto) {
+  @Post('add-my')
+  async addCommandsToTheBotYourself(@Body() addCommandsToTheBotYourselfDto: AddCommandsToTheBotYourselfDto) {
     return this.commandsService.addCommandsToTheBotYourself(addCommandsToTheBotYourselfDto);
   }
 }

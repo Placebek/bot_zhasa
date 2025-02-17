@@ -24,6 +24,9 @@ export class AddCommandsToTheBotYourselfDto {
     @IsNumber()
     teleconstructor_id: number;
 
+    @IsNumber()
+    token_id: number;
+
     @IsString()
     button_url: string;
 }

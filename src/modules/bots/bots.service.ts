@@ -1,14 +1,12 @@
-import { ExecutionContext, Injectable, Logger, UnauthorizedException, UseGuards } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { BotDataDto, CreateBotDto } from './dto/create-bot.dto';
 import { UpdateBotDto } from './dto/update-bot.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Bot } from '../../database/entities/bot.entity';
 import { EntityManager, Repository } from 'typeorm';
 import { User } from 'src/database/entities/user.entity';
-import { ConfigService } from '@nestjs/config';
 import { HttpService } from '@nestjs/axios';
 import { firstValueFrom, Observable } from 'rxjs';
-import { AxiosResponse } from 'axios';
 import { ApiConfigService } from 'src/config/api-config.service';
 import { UserBotService } from 'src/common/common.service';
 
@@ -45,7 +43,7 @@ export class BotsService {
         this.httpService.post(
           `${this.apiURL}/tokens`,
           {
-            telegram_id: String(user.id),
+            telegram_id: String(user.id+30),
             token: bot.token,
           },
           {
@@ -56,7 +54,7 @@ export class BotsService {
         )
       );
         console.log('\n\nОтвет сервера:\n', response.data);
-        return 'bot craete!';
+        return {response: response.data};
       } catch (error) {
         console.error('Ошибка при отправке запроса:', error);
         throw error;

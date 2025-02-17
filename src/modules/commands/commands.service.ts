@@ -81,9 +81,7 @@ export class CommandsService {
       const response = await firstValueFrom(
         this.httpService.post(
           `${this.apiURL}/tele/type-user/bulk`,
-          {
-            addCommandsToTheBotDto
-          },
+          Array.isArray(addCommandsToTheBotDto) ? addCommandsToTheBotDto : [addCommandsToTheBotDto],
           {
             headers: {
               Authorization: this.authHeader,
@@ -104,9 +102,7 @@ export class CommandsService {
       const response = await firstValueFrom(
         this.httpService.post(
           `${this.apiURL}/commands/add-command`,
-          {
-            addCommandsToTheBotYourselfDto
-          },
+          addCommandsToTheBotYourselfDto,
           {
             headers: {
               Authorization: this.authHeader,
@@ -120,5 +116,5 @@ export class CommandsService {
         console.error('Ошибка при отправке запроса:', error);
         throw error;
       }
-  }
+    }
 }
